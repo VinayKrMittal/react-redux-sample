@@ -33,6 +33,39 @@ class DefaultLayout extends Component {
     this.props.history.push('/login')
   }
 
+  getRoutesArr = (routes) =>{
+    let routesArr = [];
+    routes.forEach((item,index)=>{
+      if(item.component){
+      item.child && item.child.forEach((child,ci)=>{
+        let nI = ""+index+ci;
+        routesArr.push(
+          <Route
+            key={nI}
+            path={child.path}
+            exact={child.exact}
+            name={child.name}
+            render={props => (
+              <child.component {...props} />
+            )} />
+        );
+      })
+      routesArr.push( <Route
+        key={index}
+        path={item.path}
+        exact={item.exact}
+        name={item.name}
+        render={props => (
+          <item.component {...props} />
+        )} />);
+      }
+      else{
+        return (null);
+      }
+       })
+    return routesArr;
+  }
+
   render() {
     return (
       <div className="app">
@@ -56,7 +89,7 @@ class DefaultLayout extends Component {
             <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
-                  {routes.map((route, idx) => {
+                  {/* {routes.map((route, idx) => {
                     return route.component ? (
                       <Route
                         key={idx}
@@ -67,7 +100,8 @@ class DefaultLayout extends Component {
                           <route.component {...props} />
                         )} />
                     ) : (null);
-                  })}
+                  })} */}
+                  {this.getRoutesArr(routes)}
                   <Redirect from="/" to="/dashboard" />
                 </Switch>
               </Suspense>
